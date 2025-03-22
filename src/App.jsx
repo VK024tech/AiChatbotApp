@@ -12,7 +12,8 @@ function App() {
   const aiMesssage = aiText;
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
-
+  const [newQuery, setNewQuery] = useState(false);
+  let writeKey;
   ///////lifted from home////////////////
 
   <ApiFunctionality userMesssage={userMesssage} />;
@@ -21,7 +22,11 @@ function App() {
     <>
       <div className="flex flex-col mx-auto w-full max-w-[1580px]">
         <section className=" flex min-h-screen flex-col bg-gradient-to-r from-white to-blue-50">
-          <Header />
+          <Header
+            writeKey={writeKey}
+            setNewQuery={setNewQuery}
+            newQuery={newQuery}
+          />
           <Body
             userText={userText}
             setUserText={setUserText}
@@ -33,7 +38,9 @@ function App() {
             setMessages={setMessages}
             loading={loading}
             setLoading={setLoading}
-           
+            writeKey={writeKey}
+            newQuery={newQuery}
+            setNewQuery={setNewQuery}
           />
           <Conversation
             userText={userText}

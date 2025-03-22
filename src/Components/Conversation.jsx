@@ -22,10 +22,10 @@ export default function Conversation({
           <div key={index} className="flex flex-row items-start justify-end ">
             <div className="outgoing ">{message.text}</div>
 
-            <div className="bg-blue-400 rounded-full ml-2">
+            <div className="bg-blue-400 rounded-full ml-2 overflow-hidden">
               <img
                 className="w-8 min-w-8 "
-                src="src\assets\fevicon.png"
+                src="src\assets\Pfokmv74TIspDvSYyuywU.png"
                 alt="logo"
               />
             </div>

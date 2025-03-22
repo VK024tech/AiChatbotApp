@@ -13,15 +13,83 @@ export default function Body({
   setMessages,
   loading,
   setLoading,
+  writeKey,
+  setNewQuery,
+  newQuery,
 }) {
   const initialMount = useRef(true);
   const [startTyping, setStartTyping] = useState(false);
   const [emptyBClicked, setEmptyBClicked] = useState(false);
-
-
+  const [storageKey, setStorageKey] = useState("");
+  let key;
   ////session id/////
+  useEffect(() => {
+    if (localStorage.length > 0) {
+      key = localStorage.key(localStorage.length - 1);
+    } else {
+      key = uuidv4();
+      console.log(key);
+    }
+
+    setStorageKey(key);
+    // console.log(storageKey)
+
+    try {
+      const storedData = localStorage.getItem(key);
+      const data =
+        storedData && storedData.length > 0 ? JSON.parse(storedData) : [];
+      setMessages(data);
+    } catch (error) {
+      console.error("Error parsing data from localStorage:", error);
+      setMessages([]);
+    }
+  }, []);
+
+  function storageHandling() {
+    try {
+      localStorage.setItem(storageKey, JSON.stringify(messages));
+    } catch (error) {
+      console.error("error storind msg:", error);
+    }
+
+    clearEmptyArrays();
+  }
+
+  useEffect(() => {
+    storageHandling();
+  }, [messages]);
 
 
+  ////newquery
+
+  useEffect(()=>{
+    if(newQuery===true){
+      console.log(newQuery)
+      localStorage.removeItem(storageKey);
+      // key=writeKey
+      // setMessages([])
+      // setStorageKey(key)
+      setNewQuery=false
+      window.location.reload();
+    }
+  },[newQuery])
+
+  ////clear empty
+
+  const clearEmptyArrays = () => {
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      const item = localStorage.getItem(key);
+      try {
+        const parsedItem = JSON.parse(item);
+        if (Array.isArray(parsedItem) && parsedItem.length === 0) {
+          localStorage.removeItem(key);
+        }
+      } catch (e) {
+        console.log("error");
+      }
+    }
+  };
 
   const handleApi = async () => {
     try {
@@ -48,10 +116,7 @@ export default function Body({
   };
 
   useEffect(() => {
-    console.log("inside apiarray");
     if (initialMount.current) {
-      console.log("mounted");
-
       initialMount.current = false;
     } else {
       console.log("apiarraystart");
@@ -79,10 +144,6 @@ export default function Body({
       }
     }
   }, [aiText]);
-
-  useEffect(() => {
-    console.log(messages);
-  }, [messages]);
 
   function button() {
     if (userText.length > 0) {
@@ -114,7 +175,7 @@ export default function Body({
   }
 
   return (
-    <main className="w-full min-h-screen fixed  justify-end flex flex-col  mb-12 m-auto ">
+    <main className="w-full  fixed min-h-screen justify-end flex flex-col  mb-12 m-auto  ">
       {/* <h1 className="p-2 text-2xl font-medium   text-gray-800">
         Hii,{" "}
         <span className="moving text-transparent bg-clip-text font-bold">
@@ -122,9 +183,9 @@ export default function Body({
         </span>
         <br /> How can i help you?
       </h1> */}
-      <div className=" p-4 mb-8 ">
+      <div className=" p-4 mb-8  ">
         <div
-          className={` bg-gray-50 p-2  flex  justify-between mx-auto  items-center w-auto sm:w-xl  rounded-2xl border-2 border-blue-200 shadow-blue-500/40 shadow-[0px_4px_15px] min-h-16 h-auto max-h-32 md:min-h-14 md:min-w-2xl !outline-none transition-shadow  duration-800   ease-in-out ${
+          className={` bg-gray-50 p-2 flex  justify-between mx-auto  items-center w-auto sm:w-xl  rounded-2xl border-2 border-blue-200 shadow-blue-500/40 shadow-[0px_4px_15px] min-h-16 h-auto max-h-32 md:min-h-14 md:min-w-2xl !outline-none transition-shadow  duration-800   ease-in-out ${
             emptyBClicked
               ? " border-red-300 shadow-red-600/80 shadow-[0px_4px_15px]"
               : startTyping && userText.length > 0

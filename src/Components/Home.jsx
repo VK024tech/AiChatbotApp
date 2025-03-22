@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import ApiFunctionality from "./ApiFunctionality";
+import { v4 as uuidv4 } from "uuid";
 
 export default function Body({
   userMesssage,
@@ -8,36 +9,59 @@ export default function Body({
   aiMesssage,
   setAiText,
   aiText,
+  messages,
+  setMessages,
+  loading,
+  setLoading,
 }) {
+  const initialMount = useRef(true);
   const [startTyping, setStartTyping] = useState(false);
+  const [emptyBClicked, setEmptyBClicked] = useState(false);
+
+
+  ////session id/////
+
+
 
   const handleApi = async () => {
     try {
+      setLoading(true);
+
       const result = await ApiFunctionality(userMesssage);
       // console.log(result);
       setAiText(result.candidates[0].content.parts[0].text);
     } catch (error) {
-      console.log(error);
+      const aiResponse = {
+        sender: "Ai",
+        text: "Something went wrong!",
+      };
+      setMessages((prevMessage) => [...prevMessage, aiResponse]);
     }
   };
-
-  useEffect(() => {
-    console.log(aiText);
-  }, [aiText]);
-
-  const [messages, setMessages] = useState([]);
 
   const handleMessages = async () => {
     if (userText.trim()) {
       const userMesssage = { sender: "user", text: userText };
       setMessages((prevMessage) => [...prevMessage, userMesssage]);
       setUserText("");
+    }
+  };
 
+  useEffect(() => {
+    console.log("inside apiarray");
+    if (initialMount.current) {
+      console.log("mounted");
+
+      initialMount.current = false;
+    } else {
+      console.log("apiarraystart");
       try {
         if (aiText) {
-          const aiResponse = {sender: "Ai", text: aiText };
+          const aiResponse = { sender: "Ai", text: aiText };
+          setLoading(false);
           setMessages((prevMessage) => [...prevMessage, aiResponse]);
-        } else {
+        } else if (aiText !== null && aiText !== "") {
+          console.log(aiText);
           const aiResponse = {
             sender: "Ai",
             text: "Sorry! I could not process your request",
@@ -50,14 +74,44 @@ export default function Body({
           text: "Something went wrong!",
         };
         setMessages((prevMessage) => [...prevMessage, aiResponse]);
+      } finally {
+        setLoading(false);
       }
     }
-    
-  };
+  }, [aiText]);
 
   useEffect(() => {
     console.log(messages);
   }, [messages]);
+
+  function button() {
+    if (userText.length > 0) {
+      return (
+        <button
+          onClick={() => {
+            setEmptyBClicked(false);
+            handleMessages();
+            handleApi();
+          }}
+          className="bg-gray-300 p-2 px-3 rounded-xl cursor-pointer  outline-none hover:bg-gradient-to-br from-green-200 to-green-400"
+        >
+          <i className="text-2xl fa-regular fa-paper-plane text-white"></i>
+        </button>
+      );
+    } else {
+      return (
+        <button
+          onClick={() => {
+            setEmptyBClicked(true);
+            // console.log(emptyBClicked)
+          }}
+          className="bg-gray-300 p-2 px-3 rounded-xl cursor-pointer  outline-none hover:bg-gradient-to-br from-red-100 to-red-300"
+        >
+          <i className="text-2xl fa-regular fa-paper-plane text-white"></i>
+        </button>
+      );
+    }
+  }
 
   return (
     <main className="w-full min-h-screen fixed  justify-end flex flex-col  mb-12 m-auto ">
@@ -70,18 +124,33 @@ export default function Body({
       </h1> */}
       <div className=" p-4 mb-8 ">
         <div
-          className={` bg-gray-50 p-2  flex  justify-between mx-auto  items-center w-auto sm:w-xl  rounded-2xl border-2 border-blue-200 shadow-blue-500/40 shadow-[0px_4px_15px] min-h-16 h-auto max-h-32 md:min-h-14 md:min-w-2xl !outline-none transition-shadow duration-800 ease-in-out ${
-            startTyping
-              ? " border-blue-200 shadow-blue-600/80 shadow-[0px_4px_15px]"
+          className={` bg-gray-50 p-2  flex  justify-between mx-auto  items-center w-auto sm:w-xl  rounded-2xl border-2 border-blue-200 shadow-blue-500/40 shadow-[0px_4px_15px] min-h-16 h-auto max-h-32 md:min-h-14 md:min-w-2xl !outline-none transition-shadow  duration-800   ease-in-out ${
+            emptyBClicked
+              ? " border-red-300 shadow-red-600/80 shadow-[0px_4px_15px]"
+              : startTyping && userText.length > 0
+              ? " border-blue-300 shadow-blue-600/80 shadow-[0px_4px_15px]"
               : ""
           } `}
         >
           <input
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                if (userText.length > 0) {
+                  setEmptyBClicked(false);
+                  handleMessages();
+                  handleApi();
+                } else {
+                  setEmptyBClicked(true);
+                }
+              }
+            }}
             onBlur={() => {
               setStartTyping(false);
             }}
             onInput={() => {
               setStartTyping(true);
+              setEmptyBClicked(false);
+              // console.log(emptyBClicked)
             }}
             onClick={() => {
               setStartTyping(true);
@@ -94,18 +163,7 @@ export default function Body({
             type="text"
             placeholder="Feel free to ask me anything..."
           />
-          <button
-            onClick={() => {
-              {
-                handleApi()
-                handleMessages();
-              }
-              // console.log(userMesssage);
-            }}
-            className="bg-gray-300 p-2 px-3 rounded-xl cursor-pointer  outline-none hover:bg-gradient-to-br from-green-200 to-green-400"
-          >
-            <i className="text-2xl fa-regular fa-paper-plane text-white"></i>
-          </button>
+          {button()}
         </div>
       </div>
     </main>

@@ -10,9 +10,12 @@ function App() {
   const userMesssage = userText;
   const [aiText, setAiText] = useState("");
   const aiMesssage = aiText;
+  const [messages, setMessages] = useState([]);
+  const [loading, setLoading] = useState(false);
+
   ///////lifted from home////////////////
 
-  <ApiFunctionality userMesssage={userMesssage}   />
+  <ApiFunctionality userMesssage={userMesssage} />;
 
   return (
     <>
@@ -26,9 +29,19 @@ function App() {
             aiText={aiText}
             setAiText={setAiText}
             aiMesssage={aiMesssage}
+            messages={messages}
+            setMessages={setMessages}
+            loading={loading}
+            setLoading={setLoading}
+           
           />
-          <Conversation userText={userText} aiText={aiText}/>
-          
+          <Conversation
+            userText={userText}
+            aiText={aiText}
+            messages={messages}
+            loading={loading}
+            setLoading={setLoading}
+          />
         </section>
       </div>
     </>

@@ -1,32 +1,70 @@
-  import React from "react";
-  import { v4 as uuidv4 } from "uuid";
+import React, { useState } from "react";
+import History from "./History";
+import { useMediaQuery } from "react-responsive";
 
-  export default function Header({ writeKey, setNewQuery, newQuery }) {
+export default function Header({ setNewQuery, newQuery, setMessages }) {
+  const [side, setSide] = useState(false);
+
+  function toggleSidebar() {
+    setSide(!side);
+  }
+
+  function ResponsiveText() {
+    const isSmallScreen = useMediaQuery({ maxWidth: 500 });
+
     return (
       <div>
-        <header className="fixed z-20  w-full backdrop-blur-[3px] bg-[#8EC5FF70] flex gap-4 mb-12 items-center border-b-1 border-gray-200 justify-between p-6 pt-4 pb-2 m-auto">
-          <div>
-            <i className="text-xl text-gray-700 fa-solid fa-bars"></i>
-          </div>
-
-          <h1 className="flex  items-center font-medium text-2xl text-gray-800">
-            <div className="bg-blue-400 rounded-full mr-2">
-              <img
-                className="w-8 min-w-8 "
-                src="src\assets\fevicon.png"
-                alt="logo"
-              />
-            </div>
-            Sensei<span className="text-blue-500">Bot</span>
-          </h1>
-          <div className="flex gap-6 text-gray-700 items-center">
-            <i onClick={()=>{
-              setNewQuery(true)
-              console.log(newQuery)
-            }} className="text-xl fa-regular fa-pen-to-square cursor-pointer"></i>
-            {/* <div className="  bg-blue-300 p-4 rounded-full"></div> */}
-          </div>
-        </header>
+        {isSmallScreen ?"":"Clear History"}
       </div>
     );
   }
+
+  return (
+    <div>
+      <header className="fixed z-20 w-full backdrop-blur-[3px] bg-[#8EC5FF70] flex gap-4 items-center border-b-1 border-gray-200 justify-between [@media(width>400px)]:justify-between p-4  [@media(width>400px)]:p-2 pt-4 pb-2 m-auto">
+        <div>
+          {/* <i
+            onClick={toggleSidebar}
+            className="text-xl text-gray-700 fa-solid fa-bars cursor-pointer"
+          ></i> */}
+        </div>
+
+        <h1 className="flex items-center font-medium text-2xl text-gray-800">
+          <div className="bg-blue-400 rounded-full mr-2">
+            <img
+              className="w-8 min-w-8 "
+              src="src\assets\fevicon.png"
+              alt="logo"
+            />
+          </div>
+          Sensei<span className="text-blue-500">Bot</span>
+        </h1>
+        <div className="flex gap-4  [@media(width>400px)]:gap-6 text-gray-700 items-center ml-4">
+          <div
+            onClick={() => {
+              localStorage.clear();
+              setMessages([]);
+            }}
+            className="text-center flex items-center justify-center [@media(width>400px)]:gap-2 bg-red-400 px-4 p-2 rounded-md  [@media(width>400px)]:text-md font-medium hover:bg-red-500 text-white cursor-pointer "
+          >
+            <i class="fa-solid fa-trash-can"></i><ResponsiveText/>
+          </div>
+          <i
+            onClick={() => {
+              setNewQuery(true);
+              console.log(newQuery);
+            }}
+            className="text-xl fa-regular fa-pen-to-square cursor-pointer"
+          ></i>
+        </div>
+      </header>
+      <div
+        className={`transition-transform duration-300 ease-in-out ${
+          side ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
+        {/* <History /> */}
+      </div>
+    </div>
+  );
+}

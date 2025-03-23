@@ -25,7 +25,8 @@ export default function Body({
   ////session id/////
   useEffect(() => {
     if (localStorage.length > 0) {
-      key = localStorage.key(localStorage.length - 1);
+      console.log(localStorage.length)
+      key = localStorage.key((localStorage.length) -1 );
     } else {
       key = uuidv4();
       console.log(key);
@@ -65,12 +66,16 @@ export default function Body({
   useEffect(()=>{
     if(newQuery===true){
       console.log(newQuery)
-      localStorage.removeItem(storageKey);
+      const newKey = uuidv4()
+      setMessages([])
+      setStorageKey(newKey)
+      // localStorage.removeItem(storageKey)
       // key=writeKey
       // setMessages([])
       // setStorageKey(key)
+      console.log("new key :", newKey);
       setNewQuery=false
-      window.location.reload();
+      // window.location.reload();
     }
   },[newQuery])
 
@@ -185,7 +190,7 @@ export default function Body({
       </h1> */}
       <div className=" p-4 mb-8  ">
         <div
-          className={` bg-gray-50 p-2 flex  justify-between mx-auto  items-center w-auto sm:w-xl  rounded-2xl border-2 border-blue-200 shadow-blue-500/40 shadow-[0px_4px_15px] min-h-16 h-auto max-h-32 md:min-h-14 md:min-w-2xl !outline-none transition-shadow  duration-800   ease-in-out ${
+          className={` bg-gray-50 p-2 flex justify-between mx-auto items-center w-auto sm:w-xl  rounded-2xl border-2 border-blue-200 shadow-blue-500/40 shadow-[0px_4px_15px] min-h-16 h-auto max-h-32 md:min-h-14 md:min-w-2xl !outline-none transition-shadow  duration-800   ease-in-out ${
             emptyBClicked
               ? " border-red-300 shadow-red-600/80 shadow-[0px_4px_15px]"
               : startTyping && userText.length > 0
@@ -219,7 +224,7 @@ export default function Body({
             id="userInput"
             value={userText}
             onChange={(e) => setUserText(e.target.value)}
-            className="w-full m-1  bg-gray-50 h-auto p-2 !outline-none placeholder-gray-500  text-wrap"
+            className="w-full m-1 [@media(width<400px)]:text-sm  bg-gray-50 h-auto p-2 !outline-none placeholder-gray-500  text-wrap"
             autoComplete="off"
             type="text"
             placeholder="Feel free to ask me anything..."

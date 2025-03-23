@@ -3,6 +3,7 @@ import Header from "./Components/Header";
 import Body from "./Components/Home";
 import Conversation from "./Components/Conversation";
 import ApiFunctionality from "./Components/ApiFunctionality";
+import History from "./Components/History";
 
 function App() {
   ///////lifted from home////////////////
@@ -20,12 +21,13 @@ function App() {
 
   return (
     <>
-      <div className="flex flex-col mx-auto w-full max-w-[1580px]">
-        <section className=" flex min-h-screen flex-col bg-gradient-to-r from-white to-blue-50">
+      <div className="flex flex-col mx-auto w-full max-w-[1580px] ">
+        <section className=" flex min-h-screen flex-col bg-gradient-to-r from-white to-blue-50 ">
           <Header
             writeKey={writeKey}
             setNewQuery={setNewQuery}
             newQuery={newQuery}
+            setMessages={setMessages}
           />
           <Body
             userText={userText}
@@ -49,6 +51,7 @@ function App() {
             loading={loading}
             setLoading={setLoading}
           />
+         
         </section>
       </div>
     </>
